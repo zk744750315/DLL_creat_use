@@ -1,0 +1,34 @@
+详细请见：https://www.cnblogs.com/leocc325/p/15001467.html
+这是两个项目 widgetLib是dll（library）项目，创建了一个带有ui界面信号槽工程，最后只构建不用运行，wigetlib.h widgetlib_global.h   lib
+和dll这四个文件是我们所需要的，推荐构建方式为：msvc_64.（debug版本带有调试功能，release进行了最优化，不带调试）  widgetlibUse是使用
+dll文件的工程，只需要在创建include文件夹，并且把wigetlib.h widgetlib_global.h
+两个头文件放在这个文件夹里面，并在pro文件里面声明：INCLUDEPATH += $$PWD/Include，包含所需要用的头文件；然后创建lib文件夹，
+右键点击工程-添加库-外部库-只选择windows平台（linux mac平台本工程没有用到），并选择“为debnu版本添加 d 作为后缀”，点击浏览。
+将lib文件夹中的动态库文件添加进来；在工程运行的debug及release文件目录下添加dll文件即可。
+
+
+注意：
+1、 widgetlibUse的mainwindow构造函数如下：
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
+
+    //m_oW = new WidgetLib(ui->tab_2);
+    m_oW = new WidgetLib();//给WidgetLib对象分配内存,
+//    m_oW->setParent(ui->tabWidget->widget(1));//指定lib父对象，即让这个对象显示在哪一个界面，这里指定StackedWidget的第二页,指定以后会发生错误，就不指定了
+    ui->setupUi(this);
+    //m_oW->setParent(ui->tabWidget->widget(1));//一定要放在ui->setupUi(this)语句的后面！否则会crash
+   m_oW = new WidgetLib(ui->groupBox);
+   ui->tabWidget->setCurrentIndex(0);
+}
+
+
+除了在.pro中配置动态库，调用动态库的方式还有QLibrary和QPluginLoader两种。
+
+相比于QLibrary调用动态库，QPluginloader可以将封装成动态库的界面程序实例化，
+而QLibrary则只能访问动态库中的函数，无法将DLL实例化，因此在使用由界面封装而
+来的dll时，用QPluginLoader加载动态库更为合适。
+
+2、在dll工程中，凡是导出的类、类外函数声明时都需要添加：WIDGETLIB_EXPORT标识，如
+int WIDGETLIB_EXPORT sub(int a,int b);
