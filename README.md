@@ -1,0 +1,2 @@
+# DLL_creat_use
+DLL文件的创建及使用，创建一个带信号槽窗口的dll文件，放在一个widget窗口程序中运行
