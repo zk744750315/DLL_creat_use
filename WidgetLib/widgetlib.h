@@ -25,4 +25,5 @@ private:
     int add(int a,int b);
 };
 
+int WIDGETLIB_EXPORT sub(int a,int b);
 #endif // WIDGETLIB_H
