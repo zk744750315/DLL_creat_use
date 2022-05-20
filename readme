@@ -29,3 +29,6 @@ MainWindow::MainWindow(QWidget *parent)
 相比于QLibrary调用动态库，QPluginloader可以将封装成动态库的界面程序实例化，
 而QLibrary则只能访问动态库中的函数，无法将DLL实例化，因此在使用由界面封装而
 来的dll时，用QPluginLoader加载动态库更为合适。
+
+2、在dll工程中，凡是导出的类、类外函数声明时都需要添加：WIDGETLIB_EXPORT标识，如
+int WIDGETLIB_EXPORT sub(int a,int b);
