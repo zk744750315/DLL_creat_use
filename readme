@@ -32,3 +32,62 @@ MainWindow::MainWindow(QWidget *parent)
 
 2、在dll工程中，凡是导出的类、类外函数声明时都需要添加：WIDGETLIB_EXPORT标识，如
 int WIDGETLIB_EXPORT sub(int a,int b);
+
+
+
+
+#关于dll文件的调试
+
+详细参考：https://blog.csdn.net/cqzdl/article/details/107932463?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_title~default-0-107932463-blog-6017685.pc_relevant_antiscanv3&spm=1001.2101.3001.4242.1&utm_relevant_index=3
+
+1 将DLL工程设置为启动工程（只有这样调试器才会挂接到DLL工程上）
+
+2 右键单击DLL工程，选择属性（Properties)进入属性设置页面。在左边Congifure Properties下面选择Debugging
+
+3 在右边Debuggers to launch选择Local Windows Debugger
+
+4 在下面“命令”一览中点击右边的箭头，按浏览，之后选择会调用你代码的应用程序。
+
+5 在Debugger Type里面选择Mixed
+
+（这是最重要的一步，一般来说默认的Auto。但是是Auto不出来的。如果是托管代码调用你的DLL，比如一个C#应用程序调用DLL，那么你就选Managed Only，如果是一个本地代码掉用你的DLL，比如C++应用程序，那么就选Native Only。很明显Mixed包含了这两类，选择果断选Mixed）
+1、点击菜单的debug->attach to process 选择相应的exe进程
+ 
+
+ 
+
+   在这里有两个工程：一个是产生dll的工程：FastStrDLL     ------------------用来调试的工程                       
+
+                                                           一个是调用dll的工程：DllReuse         -----------------提供调用dll的exe文件          
+
+               ------------------------------------------------------------------------------------------------------------------------------------------
+
+                1.将调用dll的工程(DllReuse)目录下的Debug目录下产生的exe文件拷贝到产生dll的工程(FastStrDLL)的Debug目录下:
+
+                   注意：这一步很关键，否则会出现问题。
+
+                
+
+                2.打开产生dll的工程(FastStrDLL)-->右键工程-->属性-->调试,然后按如下配置：
+                配置-调试-命令：选择DllReuse工程debug目录下的exe可执行文件，或者将这个可执行文件拷贝到dll的工程(FastStrDLL)的Debug目录下，并选择拷贝过来的exe可执行文件；
+                配置-调试-工作目录：选择当前工程目录，或者直接写"."设置为当前工程目录；
+
+                  
+
+ 
+
+           3.在dll工程源代码中设置断点按F5开始调试成功：（断点位置只要程序能走到就行）
+           
+           
+           
+           
+           
+           #关于vs调用dll文件若干问题 1：dll lib文件的调用详细可参考：https://javajgs.com/archives/75992 添加lib 头文件：
+           依次点击“项目——配置属性——C/C++——常规”，在“附加包含目录”中加入.h文件所在的文件夹路径 依次点击“项目——配置属性——链接器——常规”， 
+           在“附加库目录”中加入.lib所在的文件夹的路径 在“链接器”中找到“输入”，在“附加依赖项”中加入需要加入的xxx.lib;（要用;和其他链接库分隔开）； 
+           添加dll文件：debug生成的dll文件要放在使用dll项目的debug目录下，同样，release成成的dll要放在使用该dllw文件的release目录下，放错是会报错的。
+           releas模式下，添加dll文件以后还不能运行，需要将程序所有依赖的包添加进来，采用msvc_32 msvs_64对应的windeployqt.exe工具打包生成，这里以msvs_64为例
+           ，对应的windeployqt.exe文件在D:\workSoftware\qt\qt\5.12.9\msvc2017_64\bin目录下，其他的也在相应文件夹下面。假如我们要发布的可执行文件为：
+           D:\data\test\pluginPro\test1_vs\WidgetLibUse\WidgetlibUse\release\WidgetlibUse.exe, 命令右键打开msvs_64的命令提示符窗口，
+           输入windeployqt D:\data\test\pluginPro\test1_vs\WidgetLibUse\WidgetlibUse\release\WidgetlibUse.exe,即可（https://www.jb51.net/article/226929.htm）
+
